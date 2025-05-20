@@ -1,7 +1,7 @@
 
 userDA=function(){
   
-  data=readline("Enter the data file name : " )  # data �Է�
+  data=readline("Enter the data file name : " )  
   cat("Select the data coding format(1 = 'a b c' or 2 = 'a,b,c'):  ") 
   fm = scan(n=1, quiet=TRUE)    
   if(fm==1) {form = ""} else {form = ","}    
@@ -30,7 +30,7 @@ userDA=function(){
   testset=cbind(testset[,resps],testset[,-resps]) }
   
   ######### Run classification #########
-  #LDA�� QDA�� ���� ��
+  #LDA, QDA, CLDA, Logit, Tree, BaggingEsb
   
   k=c()
   for(i in 1:K){k=c(k,nrow(data[data[,1]==i,]))}
@@ -126,9 +126,9 @@ userDA=function(){
           -(t(yn)%*%xn%*%beta+sum(log(1/(1+exp(xn%*%beta)))) ) }
         logit=function(beta){
           sum(abs(t(x)%*%as.matrix(1/(1+exp(-x%*%beta)))-t(x)%*%y))   }
-        beta2=optim(rep(0.1,p),loglik,method ="BFGS")$par  #�� �ڷḶ���� opt ����� ����
+        beta2=optim(rep(0.1,p),loglik,method ="BFGS")$par  
         betac[,i]=optim(beta2,logit,method ="BFGS")$par
-        ebeta[,i]=exp(as.matrix(cbind(1,testdat[,-1]))%*%betac[,i]) } #for (K-1�� ������) # e^y1, e^y2,...
+        ebeta[,i]=exp(as.matrix(cbind(1,testdat[,-1]))%*%betac[,i]) } 
       theta1=matrix(1,nrow(testdat),K)
       for (i in 1:nrow(testdat)) {
         for ( j in 1:(K-1) ) {
@@ -179,7 +179,7 @@ userDA=function(){
         fit.qda=c()
         for(i in 1:nrow(testdat)){
           fit.qda=rbind(fit.qda,resul.qda[i,]==max(resul.qda[i,]))}
-        cbind(kclass,fit.qda%*%matrix(1:K,K,1)) }  #qda����
+        cbind(kclass,fit.qda%*%matrix(1:K,K,1)) }  
       test.n=dim(testdat)[1]
       result <- matrix(,nrow=test.n,ncol=51)    
       for( i in 1:51 ){                                      
@@ -193,7 +193,7 @@ userDA=function(){
           y.hat[i] <- sample(x=y.hat, size = 1 )      
         } else { pred.y[i] <- y.hat  } }
       pred.y <- as.numeric(pred.y)     
-      cbind(kclass, as.matrix(pred.y)) }   #da ����
+      cbind(kclass, as.matrix(pred.y)) }  
   } 
   
   #########etool= CV #########
@@ -217,11 +217,11 @@ userDA=function(){
       fitdat=c()
       for(i in 1:nfold){
         if(i!=j)  fitdat=rbind(fitdat,redat[[i]])   }
-      fit.result=rbind(fit.result, da(fitdat[,-(p+1)],testdat[,-(p+1)],testdat[,(p+1)] )) 	}  # p+1: data1���� 1:n���� �߰������Ƿ�
+      fit.result=rbind(fit.result, da(fitdat[,-(p+1)],testdat[,-(p+1)],testdat[,(p+1)] )) 	}  
     fitdat=rbind(fitdat,testdat)   
     ind=matrix(1:n,n,1)  ; colnames(ind)=c("kclass")
     fit.res=merge(ind,da(fitdat[,-(p+1)],fitdat[,-(p+1)],fitdat[,(p+1)]))[,2]  # resub
-    fit.test=merge(ind,fit.result)[,2]   # testset�̿�
+    fit.test=merge(ind,fit.result)[,2]   # testset
     testset=data
   }
   #########etool= testdata #########
@@ -233,9 +233,9 @@ userDA=function(){
   }
   
   
-  ###### data output�� ���� ��ɾ� #####t
+  ###### data output #####
   class.resul=table(data[,1],fit.res)  
-  class.resul2=table(testset[,1],fit.test) #bagging qda ���Ե�
+  class.resul2=table(testset[,1],fit.test) 
   res=c() ; res2=c()
   if(K>2){
     for(i in 3:K){
